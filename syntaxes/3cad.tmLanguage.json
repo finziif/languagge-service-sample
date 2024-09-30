@@ -1,0 +1,49 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "3cad",
+	"patterns": [
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#variables"
+		},
+		{
+			"include": "#variable-assignment"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"comment": {
+			"patterns": [
+				{
+					"name": "comment.line.3cad",
+					"match": "'.*[^\n\r]"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.3cad",
+				"match": "(?i)^[ \t]*#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.3cad",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.3cad",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.3cad"
+}

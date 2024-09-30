@@ -1,0 +1,26 @@
+{
+  "name": "3cad",
+  "displayName": "xp",
+  "description": "3cad programming language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "publisher": "finziif123",
+  "contributes": {
+    "languages": [{
+      "id": "3cad",
+      "aliases": ["3cad", "3cad"],
+      "extensions": [".xp"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "3cad",
+      "scopeName": "source.3cad",
+      "path": "./syntaxes/3cad.tmLanguage.json"
+    }]
+  }
+}
