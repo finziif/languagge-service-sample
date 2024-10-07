@@ -9,6 +9,9 @@
 			"include": "#variables"
 		},
 		{
+			"include": "#language"
+		},
+		{
 			"include": "#variable-assignment"
 		},
 		{
@@ -16,6 +19,9 @@
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "#conditional"
 		}
 	],
 	"repository": {
@@ -30,8 +36,62 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.3cad",
-				"match": "(?i)^[ \t]*#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT)\\b"
+				"match": "\\#b(?i:IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT)\\b"
 			}]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "variable.language.3cad",
+					"match": "\\$\\([a-zA-Z0-9_]*\\)"
+				}
+			]
+		},
+		"variable-assignment": {	
+			"begin": "(#let)\\s+",
+			"beginCaptures": {
+			  "1": {
+				"name": "keyword.control.let.3cad"
+			  }
+			},
+			"end": "(?=:|$)",
+			"patterns": [
+				{
+					"match": "([a-zA-Z0-9_]*)",
+					"name": "variable.other.3cad"
+				},
+				{
+					"match": "(=)",
+					"name": "keyword.operator.assignment.3cad"
+				},
+				{
+					"match": "(\"[^\"]*\"|[0-9]+|true|false|null)", 
+					"name": "constant.value.3cad"
+				}
+			]		  	
+		},
+		"conditional": {
+			"patterns": [
+				{
+					"name": "keyword.control.conditional.3cad",
+					"match": "#if"
+				},
+				{
+					"name": "keyword.control.conditional.end.3cad",
+					"match": "#endif"
+				}
+			],
+			"foldingStartMarker": "^\\s*#\\s*if\\b",
+			"foldingStopMarker": "^\\s*#\\s*endif\\b"
+		},
+		"language": {
+			"patterns": 
+			[
+				{
+					"name": "variable.language.vector.3cad",
+					"match": "\\$\\([a-zA-Z0-9_]*:\\d+\\)"
+				}
+			]
 		},
 		"strings": {
 			"name": "string.quoted.double.3cad",

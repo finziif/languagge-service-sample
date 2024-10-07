@@ -6,21 +6,62 @@
   "engines": {
     "vscode": "^1.93.0"
   },
-  "categories": [
-    "Programming Languages"
-  ],
   "publisher": "finziif123",
+  "repository": {},
+  "main": "./client/out/extension.js",
+  "scripts": {
+		"vscode:prepublish": "cd client && npm install && cd .. && npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+  },
   "contributes": {
-    "languages": [{
-      "id": "3cad",
-      "aliases": ["3cad", "3cad"],
-      "extensions": [".xp"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "3cad",
-      "scopeName": "source.3cad",
-      "path": "./syntaxes/3cad.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "3cad",
+        "aliases": [
+          "3cad",
+          "3cad"
+        ],
+        "extensions": [
+          ".xp"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "configuration": {
+      "commands": [
+        {
+          "command": "mylangserver.start",
+          "title": "Start Language Server"
+        }
+      ]
+    },
+    "grammars": [
+      {
+        "language": "3cad",
+        "scopeName": "source.3cad",
+        "path": "./syntaxes/3cad.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "3cad",
+        "path": "./snippets/3cad.code-snippets"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:3cad"
+  ],
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "mocha": "^10.3.0",
+    "typescript": "^5.6.2"
   }
 }

@@ -1,0 +1,55 @@
+{
+	"For Loop": {
+		"prefix": "#for",
+		"body": [
+			"#for ${1:FunctionName;}",
+			"\t$0",
+			"#endfor"
+		],
+		"description": "For Loop"
+	},
+	"Select Case": {
+		"prefix": "#select",
+		"body": [
+			"#select $1",
+			"\t#case ${1:ParameterList;}",
+			"\t\t$0",
+			"\t#cases ${1:ParameterList;}",
+			"\t\t$0",
+			"\t#default",
+			"\t\t$0",
+			"#endselect",
+		],
+		"description": "Select Case"
+	},
+	"Public Sub ...": {
+		"prefix": "ps",
+		"body": [
+			"Public Sub ${1:ProcedureName}(${2:ParameterList})",
+			"\tTry",
+			"\t\t$0",
+			"\tCatch ex As Exception",
+			"\tEnd Try",
+			"End Sub"
+		],
+		"description": "Public Sub ..."
+	},
+	"While ... End While": {
+		"prefix": "while",
+		"body": [
+			"While ${1:Boolean}",
+			"\t$0",
+			"End While"
+		],
+		"description": "While ... End While"
+	},
+	"If Preprocessor Block": {
+		  "prefix": "#if",
+		  "body": [
+			"#if $1",
+			"\t$0",
+			"#endif"
+		  ],
+		  "description": "Preprocessor if block with matching endif"
+	}
+}
