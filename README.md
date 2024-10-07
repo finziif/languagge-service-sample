@@ -3,14 +3,14 @@
 This is the README for the extension "3cad". This is a beta version. 
 
 ## Installation
-1 Run:  `npm install` to install dependecies and then run `npm run compile` to compile fiel .ts \
+1 Run:  `npm install` to install dependecies and then run `npm run compile` to compile files .ts \
 2 ready node environment, run cli:  `npm install -g vsce` \
 3 open [marketplace](https://marketplace.visualstudio.com/VSCode), sign in \
 4 click navbar YOUR NAME link (recommend), or menubar 'Publish extensions' link button; \
 5 "create new organization", continue until done ... \
 6 click organization, click the User Settings icon to the left of the avatar \
 7 click 'Personal access tokens' \
-8 click 'new token' \
+8 click 'new token'
 - name is your extension name (kebab case),
 - Organization must select All accessible organizations, otherwise throw "Error: Failed Request: Unauthorized(401)";
 - Scopes → Show all scopes → "Marketplace" select Acquire+Publish, create...

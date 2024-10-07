@@ -44,6 +44,10 @@
 				{
 					"name": "variable.language.3cad",
 					"match": "\\$\\([a-zA-Z0-9_]*\\)"
+				},
+				{
+					"name": "variable.language.vector.3cad",
+					"match": "\\$\\([a-zA-Z0-9_]*:\\d+\\)"
 				}
 			]
 		},
@@ -85,13 +89,7 @@
 			"foldingStopMarker": "^\\s*#\\s*endif\\b"
 		},
 		"language": {
-			"patterns": 
-			[
-				{
-					"name": "variable.language.vector.3cad",
-					"match": "\\$\\([a-zA-Z0-9_]*:\\d+\\)"
-				}
-			]
+			"patterns": []
 		},
 		"strings": {
 			"name": "string.quoted.double.3cad",

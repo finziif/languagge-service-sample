@@ -10,11 +10,11 @@
   "repository": {},
   "main": "./client/out/extension.js",
   "scripts": {
-		"vscode:prepublish": "cd client && npm install && cd .. && npm run compile",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
-		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
-		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+    "vscode:prepublish": "cd client && npm install && cd .. && npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
   },
   "contributes": {
     "languages": [
@@ -50,7 +50,26 @@
         "language": "3cad",
         "path": "./snippets/3cad.code-snippets"
       }
-    ]
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "variable",
+        "description": "A variable in the custom language"
+      },
+      {
+        "id": "vector",
+        "description": "A vector in the custom language"
+      },
+      {
+        "id": "vectorSeparator",
+        "description": "Separator for vector indices"
+      },
+      {
+        "id": "vectorIndex",
+        "description": "Index of the vector"
+      }
+    ],
+    "semanticTokenModifiers": []
   },
   "activationEvents": [
     "onLanguage:3cad"
@@ -62,6 +81,9 @@
     "@typescript-eslint/parser": "^7.1.0",
     "eslint": "^8.57.0",
     "mocha": "^10.3.0",
-    "typescript": "^5.6.2"
-  }
+    "typescript": "^5.6.2",
+    "vscode": "^1.80.0",
+    "vscode-languageserver": "^9.0.1"
+  },
+  "dependencies": {}
 }
