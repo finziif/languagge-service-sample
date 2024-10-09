@@ -1,3 +1,9 @@
 .vscode
 .vscodeignore
 ./node_modules
+./server/node_modules
+./server/out
+./server/tsconfig.tsbuildinfo
+./client/node_modules
+./client/out
+./client/tsconfig.tsbuildinfo

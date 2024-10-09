@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import *  as vscode from 'vscode';
+import { ExtensionContext } from 'vscode';
 
 import {
 	LanguageClient,
@@ -15,12 +15,7 @@ import {
 
 let client: LanguageClient;
 
-const tokenTypesLegend = ['variable', 'vector', 'vectorSeparator', 'vectorIndex'];
-const tokenModifiersLegend = ['defaultLibrary'];
-
-const legend = new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
-
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
 	// The server is implemented in node
 	const serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')

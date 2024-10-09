@@ -12,9 +12,6 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,	
-	SemanticTokensParams,
-	SemanticTokens,
-	SemanticTokensLegend,
 	type DocumentDiagnosticReport
 } from 'vscode-languageserver/node';
 
@@ -49,18 +46,6 @@ connection.onInitialize((params: InitializeParams) => {
             completionProvider: {
                 resolveProvider: true
             },
-			semanticTokensProvider: {
-                full: true,
-                legend: {
-                    tokenTypes: [
-                        'variable',
-                        'vector',
-                        'vectorSeparator',
-                        'vectorIndex'
-                    ],
-                    tokenModifiers: ['defaultLibrary']
-                }
-            },
             diagnosticProvider: {
 				interFileDependencies: false,
 				workspaceDiagnostics: false
@@ -89,76 +74,6 @@ connection.onInitialized(() => {
 		});
 	}
 });
-
-// Semantic Highlight
-
-const tokenTypesLegend = ['variable', 'vector', 'vectorSeparator', 'vectorIndex'];
-const tokenModifiersLegend = ['defaultLibrary'];
-
-const legend: SemanticTokensLegend = {
-    tokenTypes: tokenTypesLegend,
-    tokenModifiers: tokenModifiersLegend
-};
-
-connection.languages.semanticTokens.on((params: SemanticTokensParams) => {
-    const document = documents.get(params.textDocument.uri);
-    if (!document) {
-        return { data: [] }; // Restituisci un array vuoto se il documento non esiste
-    }
-
-    const text = document.getText();
-	const tokens: number[] = [];
-    // Esempio semplice di generazione di token semantici
-    const lines = text.split('\n');
-
-    // Qui inserisci la tua logica per la tokenizzazione del testo
-	const variableRegex = /\$\([a-zA-Z0-9_]*\)/g;
-    const vectorRegex = /\$\([a-zA-Z0-9_]*\):(\d+)/g;
-
-	for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-        const line = lines[lineNumber];
-        let match;
-
-        // Aggiungi variabili
-        while ((match = variableRegex.exec(line)) !== null) {
-            const startChar = match.index;
-            const length = match[0].length;
-            const tokenTypeIndex = tokenTypesLegend.indexOf('variable');
-            const tokenModifierIndex = tokenModifiersLegend.indexOf('defaultLibrary');
-            tokens.push(...encodeToken(lineNumber, startChar, length, tokenTypeIndex, tokenModifierIndex));
-        }
-
-        // Aggiungi vettori e gestisci i due punti e l'indice
-        while ((match = vectorRegex.exec(line)) !== null) {
-            // Nome del vettore
-            const vectorStartChar = match.index;
-            const vectorLength = match[0].length - match[1].length - 1; // Lunghezza del nome del vettore senza ':indice'
-            const tokenTypeIndex = tokenTypesLegend.indexOf('vector');
-            tokens.push(...encodeToken(lineNumber, vectorStartChar, vectorLength, tokenTypeIndex, 0));
-
-            // Due punti
-            const colonIndex = vectorStartChar + vectorLength; // Posizione del ':'
-            const tokenTypeSeparatorIndex = tokenTypesLegend.indexOf('vectorSeparator');
-            tokens.push(...encodeToken(lineNumber, colonIndex, 1, tokenTypeSeparatorIndex, 0));
-
-            // Indice del vettore
-            const indexStartChar = colonIndex + 1; // Posizione dell'indice
-            const indexLength = match[1].length;   // Lunghezza dell'indice
-            const tokenTypeIndexIndex = tokenTypesLegend.indexOf('vectorIndex');
-            tokens.push(...encodeToken(lineNumber, indexStartChar, indexLength, tokenTypeIndexIndex, 0));
-        }
-    }
-	
-    return { data: tokens };
-});
-
-
-// Funzione per codificare i token
-function encodeToken(line: number, start: number, length: number, tokenType: number, tokenModifier: number): number[] {
-    // Codifica il token nel formato richiesto dal protocollo dei token semantici
-    return [line, start, length, tokenType, tokenModifier];
-}
-
 
 // The example settings
 interface ExampleSettings {
@@ -236,7 +151,7 @@ documents.onDidChangeContent(change => {
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
-
+	let maxNumberOfProblems:number = 100;
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	const text = textDocument.getText();
 	const pattern = /\b[A-Z]{2,}\b/g;
@@ -244,7 +159,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 
 	let problems = 0;
 	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
+	while ((m = pattern.exec(text)) && problems < maxNumberOfProblems) {
 		problems++;
 		const diagnostic: Diagnostic = {
 			severity: DiagnosticSeverity.Warning,

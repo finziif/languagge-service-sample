@@ -9,19 +9,28 @@
 			"include": "#variables"
 		},
 		{
-			"include": "#language"
+			"include": "#special-variables"
+		},
+		{
+			"include": "#tipologie"
 		},
 		{
 			"include": "#variable-assignment"
 		},
 		{
+			"include": "#string-assignment"
+		},
+		{
+			"include": "#special"
+		},
+		{
+			"include": "#print"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
-			"include": "#strings"
-		},
-		{
-			"include": "#conditional"
+			"include": "#operator"
 		}
 	],
 	"repository": {
@@ -29,76 +38,232 @@
 			"patterns": [
 				{
 					"name": "comment.line.3cad",
-					"match": "'.*[^\n\r]"
+					"match": "'.*"
+				},
+				{
+					"name": "comment.line.3cad",
+					"match": "//.*"
+				},
+				{
+					"name": "comment.line.3cad",
+					"match": "##.*"
 				}
 			]
 		},
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.3cad",
-				"match": "\\#b(?i:IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT)\\b"
+				"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT)\\b"
 			}]
 		},
-		"variables": {
+		"variables": {			
+			"begin": "\\$\\(",
+			"beginCaptures": {
+			  "0": {
+				"name": "variable.language.3cad"
+			  }
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "variable.language.3cad"
+					}
+				},
 			"patterns": [
 				{
-					"name": "variable.language.3cad",
-					"match": "\\$\\([a-zA-Z0-9_]*\\)"
+					"match": "[a-zA-Z0-9_.]+",
+					"name": "variable.name.3cad"
 				},
 				{
-					"name": "variable.language.vector.3cad",
-					"match": "\\$\\([a-zA-Z0-9_]*:\\d+\\)"
+                    "begin": ":", 
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword.other.3cad"
+                        }
+                    },
+                    "end": "(?=\\))",  
+                    "patterns": [
+                        {
+                            "name": "variable.name.3cad",
+                            "match": "\\d+" 
+                        }
+                    ]
+                }
+			]
+		},
+		"special-variables": {			
+			"patterns": [
+				{
+					"match": "(?i)\\$\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
+					"name": "keyword.control.3cad"
 				}
 			]
 		},
-		"variable-assignment": {	
-			"begin": "(#let)\\s+",
-			"beginCaptures": {
-			  "1": {
-				"name": "keyword.control.let.3cad"
-			  }
-			},
-			"end": "(?=:|$)",
+		"special-assignment": {			
 			"patterns": [
 				{
-					"match": "([a-zA-Z0-9_]*)",
-					"name": "variable.other.3cad"
+					"match": "(?i)\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
+					"name": "keyword.control.3cad"
+				}
+			]
+		},
+		"tipologie": {
+			"patterns": [
+				{
+					"begin": "^\\s*\\d{3}\\b", 
+					"beginCaptures": {
+						"0": {
+							"name": "support.class.3cad"
+						}
+					},
+					"end": "(?=$)",
+					"patterns":[
+						{
+							"match": ",",
+							"name" : "operator.separator.3cad"
+						},
+						{
+							"match": "=",
+							"name" : "operator.assignment.3cad"
+						},
+						{
+							"include": "#tipologie-params"
+						},
+						{
+							"include": "#special-variables"
+						},
+						{
+							"include": "#variables"
+						},
+						{
+							"include": "#operator"
+						},
+						{
+							"include": "#comment"
+						}
+					]
+				}
+			]
+		},
+		"tipologie-params": {
+			"patterns": [
+				{
+					"match": "\\b(?i)(DL|DA|DP|SL|SA|SP|DIS|GL|C1|C2|X1|X2|X3|X4|X5|X6|X7|X8|X9)\\b",
+					"name" : "support.function.3cad"
+				}
+			]
+		},
+		"operator": {
+			"begin": "(?<=\\+|\\-|\\/|\\*|\\=|\\<|\\<\\=|\\>|\\>\\=)\\s*",
+			"beginCaptures" : {
+				"1" : {
+					"name": "operator.arithmetic.3cad"
+				}
+			},
+			"end": "(?=,|\\$|$)",
+			"patterns": [
+				{
+					"match": "\\d+",
+					"name":"constant.numeric.3cad"
+				}
+			]
+		},
+		"variable-assignment": {
+			"begin": "(?i)(#let)\\s+([a-zA-Z0-9_]*)\\s*(=)",
+			"beginCaptures": {
+				"1": {
+				"name": "keyword.control.let.3ad"   
+				},
+				"2": {
+				"name": "variable.name.3cad"         
+				},
+				"3": {
+				"name": "keyword.operator.assignment.3cad" 
+				}
+			},
+			"end": "(?=$)",
+			"patterns": [
+				{  
+					"match": "\\d+",
+					"name": "constant.numeric.3cad"
+				},
+				{  
+					"match": ",",
+					"name": "operator.separator.3cad"
 				},
 				{
-					"match": "(=)",
-					"name": "keyword.operator.assignment.3cad"
+					"include": "#variables"
 				},
 				{
-					"match": "(\"[^\"]*\"|[0-9]+|true|false|null)", 
-					"name": "constant.value.3cad"
+					"include": "#special-variables"
+				},
+				{
+					"include": "#special-assignment"
+				},
+				{
+					"include": "#comment"
 				}
 			]		  	
 		},
-		"conditional": {
+		"string-assignment": {
+			"begin": "(?i)(#lets)\\s+([a-zA-Z0-9_]*)\\s*(=)",
+			"beginCaptures": {
+				"1": {
+				"name": "keyword.control.let.3ad"   
+				},
+				"2": {
+				"name": "variable.name.3cad"         
+				},
+				"3": {
+				"name": "keyword.operator.assignment.3cad" 
+				}
+			},
+			"end": "(?=$)",
+			"patterns": [
+				{  
+					"name": "string.unquoted.3cad",
+					"begin": "(?<=\\=)\\s*",
+              		"end": "(?=$)",
+					"patterns": [
+						{  
+							"include": "#variables"
+						},
+						{  
+							"include": "#special-variables"
+						},
+						{  
+							"include": "#comment"
+						}
+					]
+				}
+			]		  	
+		},
+		"special": {
 			"patterns": [
 				{
-					"name": "keyword.control.conditional.3cad",
-					"match": "#if"
+					"name":"support.function.3cad",
+					"match": "\\s*!(?i)(QUOTA1|ALTEZZE|MTTRASLA|MTINIT|MTRESET|ADDPUNTO|DELPUNTO|AZZERAPUNTI|AZZERA|TIPOBOX|IMGSCALA|CODICEBARRA|DIMBARRA|SAGOMA|SAGDUMP|FRESA)\\b"
+				}
+			]
+		},
+		"print": {
+			"name": "string.unquoted.3cad",
+			"begin": "(?i)(#MSG)\\s+",
+			"beginCaptures": {
+				"1": {
+				"name": "keyword.control.3ad"   
+				}
+			},
+			"end": "(?=$)",
+			"patterns": [
+				{
+					"include": "#variables"
 				},
 				{
-					"name": "keyword.control.conditional.end.3cad",
-					"match": "#endif"
-				}
-			],
-			"foldingStartMarker": "^\\s*#\\s*if\\b",
-			"foldingStopMarker": "^\\s*#\\s*endif\\b"
-		},
-		"language": {
-			"patterns": []
-		},
-		"strings": {
-			"name": "string.quoted.double.3cad",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
+					"include": "#special-variables"
+				},
 				{
-					"name": "constant.character.escape.3cad",
-					"match": "\\\\."
+					"include": "#comment"
 				}
 			]
 		}

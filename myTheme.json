@@ -1,0 +1,24 @@
+{
+    "name": "My Custom Theme",
+    "type": "dark",
+    "tokenColors": [
+        {
+            "scope": "variable.separator",
+            "settings": {
+                "foreground": "#00FF00"
+            }
+        },
+        {
+            "scope": "variable.name",
+            "settings": {
+                "foreground": "#0000FF"
+            }
+        },
+        {
+            "scope": "variable.close",
+            "settings": {
+                "foreground": "#00FF00"
+            }
+        }
+    ]
+}

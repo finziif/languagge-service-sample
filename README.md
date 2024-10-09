@@ -10,10 +10,10 @@ This is the README for the extension "3cad". This is a beta version.
 5 "create new organization", continue until done ... \
 6 click organization, click the User Settings icon to the left of the avatar \
 7 click 'Personal access tokens' \
-8 click 'new token'
+8 click 'new token' \
 - name is your extension name (kebab case),
 - Organization must select All accessible organizations, otherwise throw "Error: Failed Request: Unauthorized(401)";
-- Scopes → Show all scopes → "Marketplace" select Acquire+Publish, create...
+- Scopes → Show all scopes → "Marketplace" select Acquire+Publish, create... \
 9 copy token, backup to file or print it \
 10 In the command line window, run  `vsce package`. This command create a `.vsix` file in root folder \
 11 Go this [page](https://marketplace.visualstudio.com/manage) and click on 'create publisher', \

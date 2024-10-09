@@ -21,7 +21,6 @@
       {
         "id": "3cad",
         "aliases": [
-          "3cad",
           "3cad"
         ],
         "extensions": [
@@ -50,26 +49,7 @@
         "language": "3cad",
         "path": "./snippets/3cad.code-snippets"
       }
-    ],
-    "semanticTokenTypes": [
-      {
-        "id": "variable",
-        "description": "A variable in the custom language"
-      },
-      {
-        "id": "vector",
-        "description": "A vector in the custom language"
-      },
-      {
-        "id": "vectorSeparator",
-        "description": "Separator for vector indices"
-      },
-      {
-        "id": "vectorIndex",
-        "description": "Index of the vector"
-      }
-    ],
-    "semanticTokenModifiers": []
+    ]
   },
   "activationEvents": [
     "onLanguage:3cad"
@@ -82,7 +62,7 @@
     "eslint": "^8.57.0",
     "mocha": "^10.3.0",
     "typescript": "^5.6.2",
-    "vscode": "^1.80.0",
+    "vscode": "^1.0.0",
     "vscode-languageserver": "^9.0.1"
   },
   "dependencies": {}
