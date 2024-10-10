@@ -53,7 +53,7 @@
 		"keywords": {
 			"patterns": [{
 				"name": "keyword.control.3cad",
-				"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT)\\b"
+				"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT|BREAK)\\b"
 			}]
 		},
 		"variables": {			
@@ -169,27 +169,22 @@
 			]
 		},
 		"variable-assignment": {
-			"begin": "(?i)(#let)\\s+([a-zA-Z0-9_]*)\\s*(=)",
+			"name": "variable.name.3cad",
+			"begin": "(?i)(#let)\\s+",
 			"beginCaptures": {
 				"1": {
-				"name": "keyword.control.let.3ad"   
-				},
-				"2": {
-				"name": "variable.name.3cad"         
-				},
-				"3": {
-				"name": "keyword.operator.assignment.3cad" 
+					"name": "keyword.control.let.3ad"   
 				}
 			},
 			"end": "(?=$)",
 			"patterns": [
-				{  
-					"match": "\\d+",
-					"name": "constant.numeric.3cad"
+				{
+					"match": "=",
+					"name": "keyword.operator.assignment.3cad"         
 				},
-				{  
+				{
 					"match": ",",
-					"name": "operator.separator.3cad"
+					"name": "keyword.operator.separator.3cad" 
 				},
 				{
 					"include": "#variables"
@@ -202,6 +197,10 @@
 				},
 				{
 					"include": "#comment"
+				},
+				{
+					"match": "\\d+",
+					"name":"constant.numeric.3cad"
 				}
 			]		  	
 		},

@@ -43,13 +43,13 @@
 		],
 		"description": "While ... End While"
 	},
-	"If Preprocessor Block": {
-		  "prefix": "#if",
+	"#IF ... #ENDIF": {
+		  "prefix": "#IF",
 		  "body": [
-			"#if $1",
+			"#IF ${1:Boolean}",
 			"\t$0",
-			"#endif"
+			"#ENDIF"
 		  ],
 		  "description": "Preprocessor if block with matching endif"
-	}
+	},
 }

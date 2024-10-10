@@ -198,12 +198,28 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received a file change event');
 });
 
+
+// Keywords da suggerire
+//const keywords = [
+//	{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assign variable' },
+//	{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assign string' },
+//	{ label: '#MSG', kind: CompletionItemKind.Keyword, detail: 'Print message' },
+//  ];
+
+
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
+		
+		//return keywords.map(kw => ({
+		//	label: kw.label,
+		//	kind: kw.kind,
+		//	detail: kw.detail
+		//  }));
+		
 		return [
 			{
 				label: 'TypeScript',
@@ -215,7 +231,7 @@ connection.onCompletion(
 				kind: CompletionItemKind.Text,
 				data: 2
 			}
-		];
+		]
 	}
 );
 
