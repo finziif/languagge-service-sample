@@ -1,48 +1,39 @@
 {
-	"For Loop": {
-		"prefix": "#for",
+	"For value": {
+		"prefix": "#FOR",
 		"body": [
-			"#for ${1:FunctionName;}",
+			"#FOR ${1:Value};${1:Value};${1:Value}",
 			"\t$0",
-			"#endfor"
+			"#ENDFOR"
 		],
 		"description": "For Loop"
 	},
-	"Select Case": {
-		"prefix": "#select",
+
+	"For range": {
+		"prefix": "#FOR",
 		"body": [
-			"#select $1",
-			"\t#case ${1:ParameterList;}",
-			"\t\t$0",
-			"\t#cases ${1:ParameterList;}",
-			"\t\t$0",
-			"\t#default",
-			"\t\t$0",
-			"#endselect",
-		],
-		"description": "Select Case"
-	},
-	"Public Sub ...": {
-		"prefix": "ps",
-		"body": [
-			"Public Sub ${1:ProcedureName}(${2:ParameterList})",
-			"\tTry",
-			"\t\t$0",
-			"\tCatch ex As Exception",
-			"\tEnd Try",
-			"End Sub"
-		],
-		"description": "Public Sub ..."
-	},
-	"While ... End While": {
-		"prefix": "while",
-		"body": [
-			"While ${1:Boolean}",
+			"#FOR $${1:Start_Range}:${1:End_Range}",
 			"\t$0",
-			"End While"
+			"#ENDFOR"
 		],
-		"description": "While ... End While"
+		"description": "For Loop"
 	},
+
+	"Select Case": {
+		"prefix": "#SELECT",
+		"body": [
+			"#SELECT $1",
+			"\t#CASE ${1:Int}:${2:Int}",
+			"\t\t$0",
+			"\t#CASES ${1:String}:${2:String}",
+			"\t\t$0",
+			"\t#DEFAULT",
+			"\t\t$0",
+			"#ENDSELECT",
+		],
+		"description": "SELECT CASE"
+	},
+
 	"#IF ... #ENDIF": {
 		  "prefix": "#IF",
 		  "body": [
@@ -50,6 +41,32 @@
 			"\t$0",
 			"#ENDIF"
 		  ],
-		  "description": "Preprocessor if block with matching endif"
+		  "description": "Preprocessor If block with matching endif"
+	},
+
+	"#IF #ELSE #ENDIF": {
+		"prefix": "#IF",
+		"body": [
+		  "#IF ${1:Boolean}",
+		  "\t$0",
+		  "#ELSE",
+		  "\t$0",
+		  "#ENDIF"
+		],
+		"description": "Preprocessor If Else block with matching endif"
+	},
+
+	"#IF #ELSEIF #ELSE #ENDIF": {
+		"prefix": "#IF",
+		"body": [
+		"#IF ${1:Boolean}",
+		"\t$0",
+		"#ELSEIF ${1:Boolean}",
+		"\t$0",
+		"#ELSE",
+		"\t$0",
+		"#ENDIF"
+		],
+		"description": "Preprocessor If Elseif Else block with matching endif"
 	},
 }
