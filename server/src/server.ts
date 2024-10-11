@@ -12,14 +12,12 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
-	Hover,	
+	Range,	
 	TextEdit,
 	type DocumentDiagnosticReport,
-	integer
 } from 'vscode-languageserver/node';
 
 import { Position, TextDocument } from 'vscode-languageserver-textdocument';
-import { Interface } from 'node:readline/promises';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -47,7 +45,6 @@ connection.onInitialize((params: InitializeParams) => {
     const result: InitializeResult = {
         capabilities: {
 			renameProvider : true,
-			documentRangeFormattingProvider: true,
 			documentFormattingProvider : true,
 			hoverProvider : true,
             textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -157,13 +154,14 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+// https://github.com/microsoft/vscode-extension-samples/blob/0107f5a8ee940a46a03c8bdcbfdd172a8ff56059/lsp-sample/server/src/server.ts#L162
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
 	let maxNumberOfProblems:number = 100;
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	const text = textDocument.getText();
-	const pattern = /\b[A-Z]{2,}\b/g;
+	const pattern = /#(?!let\b|lets\b|msg\b|if\b|elseif\b|else\b|endif\b|for\b|endfor\b|select\b|endselect\b|case\b|cases\b|default\b|break\b)\w+/gi;
 	let m: RegExpExecArray | null;
 
 	let problems = 0;
@@ -171,12 +169,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 	while ((m = pattern.exec(text)) && problems < maxNumberOfProblems) {
 		problems++;
 		const diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Warning,
+			severity: DiagnosticSeverity.Error,
 			range: {
 				start: textDocument.positionAt(m.index),
 				end: textDocument.positionAt(m.index + m[0].length)
 			},
-			message: `${m[0]} is all uppercase.`,
+			message: `${m[0]} is not define.`,
 			source: 'ex'
 		};
 		if (hasDiagnosticRelatedInformationCapability) {
@@ -201,19 +199,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 	}
 	return diagnostics;
 }
-
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received a file change event');
 });
-
-
-// Keywords da suggerire
-//const keywords = [
-//	{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assign variable' },
-//	{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assign string' },
-//	{ label: '#MSG', kind: CompletionItemKind.Keyword, detail: 'Print message' },
-//  ];
 
 
 // This handler provides the initial list of the completion items.
@@ -223,24 +212,13 @@ connection.onCompletion(
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 		
-		//return keywords.map(kw => ({
-		//	label: kw.label,
-		//	kind: kw.kind,
-		//	detail: kw.detail
-		//  }));
-		
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		]
+		const mySystemFunctions: CompletionItem[] = [
+			{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assign variable', documentation: 'Sintassi: `#LET <nome_variabile> = valore`' },
+			{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assign string', documentation: 'Sintassi: `#LETS <nome_variabile> = stringa`' },
+			{ label: '#MSG', kind: CompletionItemKind.Function, detail: 'Print message', documentation: 'Sintassi: `#MSG (message: string)`' }, 
+		];
+
+		return mySystemFunctions;
 	}
 );
 
@@ -263,88 +241,83 @@ connection.onCompletionResolve(
 const prefixesIncrease = ['#if', '#elseif', '#else', '#for', '#select', '#case', '#cases', '#default'];
 const prefixesDecrease = ['#endif', '#endfor', '#endselect', '#case', '#cases', '#default'];
 
-function formatRange(text: string): string {
+function formatDocument(text: string): string {
 	let delta = 0;
     return text.split('\n').map(line => {
 		const lowerCaseLine = line.trim().toLowerCase();
 		if (prefixesDecrease.some(prefixesDecrease => lowerCaseLine.startsWith(prefixesDecrease.toLowerCase()))) {
-			delta -= 4;
+			delta -= 2;
 		}
-		let lineFormatted = line.padStart(line.trim().length + delta);
+		let lineFormatted = line.trim().padStart(line.trim().length + delta);
 		if (prefixesIncrease.some(prefixesIncrease => lowerCaseLine.startsWith(prefixesIncrease.toLowerCase()))) {
-			delta += 4;
+			delta += 2;
 		}
         return lineFormatted;
     }).join('\n');
 }
 
-connection.onDocumentRangeFormatting((params) => {
+connection.onDocumentFormatting((params) => {
     const document = documents.get(params.textDocument.uri);
     if (!document) {
         return [];
     }
 
-    const start = params.range.start;
-    const end = params.range.end;
-    const text = document.getText({
-        start,
-        end
-    });
+    const text = document.getText();
 
-    // Applica la tua logica di formattazione al testo selezionato
-    const formattedText = formatRange(text);
+    // Applica la tua logica di formattazione al documento
+    const formattedText = formatDocument(text);
 
-    // Calcola il range da sostituire
-    const edit: TextEdit = {
-        range: {
-            start,
-            end
-        },
-        newText: formattedText
+	const fullRange: Range = {
+        start: { line: 0, character: 0 },
+        end: { line: document.lineCount - 1, character: Number.MAX_SAFE_INTEGER }
     };
 
-    // Restituisce l'edit al client
-    return [edit];
+    // Restituisce la modifica al client
+    return [TextEdit.replace(fullRange, formattedText)];
 });
 
 documents.listen(connection);
 
+// Definizione delle funzioni di sistema
+const systemFunctions: { [key: string]: string } = {
+	"#MSG": "Stampa un messaggio a schermo.\n\n**Sintassi**: `#MSG <stringa>",
+	"#LET": "Assegnazione variabile numerica.\n\n**Sintassi**: `#LET <nome_variabile> = valore`",
+	"#LETS": "Assegnazione stringa.\n\n**Sintassi**: `#LETS <nome_variabile> = stringa`",
+	// @TODO: Aggiungi altre funzioni di sistema
+};
+
 connection.onHover((params) => {
-    const position = params.position;
 	const document = documents.get(params.textDocument.uri);
-	if (document != undefined) {
-		const text = document.getText(); // Ottieni tutto il testo del documento
+	if (document) {
+		const position = params.position;
 
-		// Trova la parola su cui si trova il cursore
-		const lines = text.split(/\r?\n/g);
-		const line = lines[position.line];
-		const word = getWordAtPosition(line, position);
+		const word = getWordAtPosition(document, position); // Trova la parola su cui si trova il cursore
 
-		// Controlla se il cursore è su "#msg" e restituisci la descrizione
-		if (word === '#msg') {
+		if (systemFunctions[word]) {
 			return {
 				contents: {
-					kind: 'markdown',
-					value: "**#msg**: Prints a message to the screen.\n\nExample usage: `#msg \"Hello, world!\"`"
+					kind: "markdown",
+					value: systemFunctions[word]
 				}
 			};
 		}
 	}
-    
-    // Se non è "#msg", non fare nulla
+
     return null;
 });
 
 // Funzione per ottenere la parola alla posizione del cursore
-function getWordAtPosition(line:String, position:Position) {
-    const words = line.split(/\s+/);
-    let currentLength = 0;
-    for (const word of words) {
-        currentLength += word.length;
-        if (position.character <= currentLength) {
+function getWordAtPosition(document:TextDocument, position:Position) {
+	const text = document.getText({
+		start: { line: position.line, character: 0 },
+        end: { line: position.line, character: Number.MAX_SAFE_INTEGER }
+	});
+	const words = text.split(/\s+/);
+    const index = position.character;
+    for (let word of words) {
+        if (index >= text.indexOf(word) && index <= text.indexOf(word) + word.length) {
             return word;
         }
-        currentLength++; // aggiungi 1 per lo spazio
     }
     return '';
 }

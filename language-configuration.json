@@ -27,15 +27,11 @@
 				"comment"
 			]
 		},
-        { 
-            "open": "#if", 
-            "close": "#endif" 
-        }
     ],
     "folding": {
         "markers": {
-            "start": "^\\s*#\\s*(?i:if)\\b",
-            "end": "^\\s*#\\s*(?i:endif)\\b"
+            "start": "^\\s*(?i:#select|#msg)",
+            "end": "^\\s*(?i:#endselect|#let)"
         }
     },
     "wordPattern": "\\w+",
@@ -51,8 +47,11 @@
     ],
      "onEnterRules": [
         {
-          "beforeText": "^\\s*(?:def|class|for|if|elif|else|while|try|with|finally|except|async).*?:\\s*$",
+          "beforeText": "^\\s*(?i:#if|#msg)",
           "action": { "indent": "indent" }
         }
-    ]
+    ],
+    "indentStyle": "space",
+    "tabSize": 4,
+    "insertSpaces": true
 }
