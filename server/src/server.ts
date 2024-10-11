@@ -11,11 +11,15 @@ import {
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
-	DocumentDiagnosticReportKind,	
-	type DocumentDiagnosticReport
+	DocumentDiagnosticReportKind,
+	Hover,	
+	TextEdit,
+	type DocumentDiagnosticReport,
+	integer
 } from 'vscode-languageserver/node';
 
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { Position, TextDocument } from 'vscode-languageserver-textdocument';
+import { Interface } from 'node:readline/promises';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -42,9 +46,14 @@ connection.onInitialize((params: InitializeParams) => {
 	);
     const result: InitializeResult = {
         capabilities: {
+			renameProvider : true,
+			documentRangeFormattingProvider: true,
+			documentFormattingProvider : true,
+			hoverProvider : true,
             textDocumentSync: TextDocumentSyncKind.Incremental,
             completionProvider: {
-                resolveProvider: true
+                resolveProvider: true,
+				triggerCharacters: [ '.' ]
             },
             diagnosticProvider: {
 				interFileDependencies: false,
@@ -251,5 +260,93 @@ connection.onCompletionResolve(
 	}
 );
 
+const prefixesIncrease = ['#if', '#elseif', '#else', '#for', '#select', '#case', '#cases', '#default'];
+const prefixesDecrease = ['#endif', '#endfor', '#endselect', '#case', '#cases', '#default'];
+
+function formatRange(text: string): string {
+	let delta = 0;
+    return text.split('\n').map(line => {
+		const lowerCaseLine = line.trim().toLowerCase();
+		if (prefixesDecrease.some(prefixesDecrease => lowerCaseLine.startsWith(prefixesDecrease.toLowerCase()))) {
+			delta -= 4;
+		}
+		let lineFormatted = line.padStart(line.trim().length + delta);
+		if (prefixesIncrease.some(prefixesIncrease => lowerCaseLine.startsWith(prefixesIncrease.toLowerCase()))) {
+			delta += 4;
+		}
+        return lineFormatted;
+    }).join('\n');
+}
+
+connection.onDocumentRangeFormatting((params) => {
+    const document = documents.get(params.textDocument.uri);
+    if (!document) {
+        return [];
+    }
+
+    const start = params.range.start;
+    const end = params.range.end;
+    const text = document.getText({
+        start,
+        end
+    });
+
+    // Applica la tua logica di formattazione al testo selezionato
+    const formattedText = formatRange(text);
+
+    // Calcola il range da sostituire
+    const edit: TextEdit = {
+        range: {
+            start,
+            end
+        },
+        newText: formattedText
+    };
+
+    // Restituisce l'edit al client
+    return [edit];
+});
+
 documents.listen(connection);
+
+connection.onHover((params) => {
+    const position = params.position;
+	const document = documents.get(params.textDocument.uri);
+	if (document != undefined) {
+		const text = document.getText(); // Ottieni tutto il testo del documento
+
+		// Trova la parola su cui si trova il cursore
+		const lines = text.split(/\r?\n/g);
+		const line = lines[position.line];
+		const word = getWordAtPosition(line, position);
+
+		// Controlla se il cursore è su "#msg" e restituisci la descrizione
+		if (word === '#msg') {
+			return {
+				contents: {
+					kind: 'markdown',
+					value: "**#msg**: Prints a message to the screen.\n\nExample usage: `#msg \"Hello, world!\"`"
+				}
+			};
+		}
+	}
+    
+    // Se non è "#msg", non fare nulla
+    return null;
+});
+
+// Funzione per ottenere la parola alla posizione del cursore
+function getWordAtPosition(line:String, position:Position) {
+    const words = line.split(/\s+/);
+    let currentLength = 0;
+    for (const word of words) {
+        currentLength += word.length;
+        if (position.character <= currentLength) {
+            return word;
+        }
+        currentLength++; // aggiungi 1 per lo spazio
+    }
+    return '';
+}
+
 connection.listen();

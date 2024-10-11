@@ -38,10 +38,6 @@
 			"patterns": [
 				{
 					"name": "comment.line.3cad",
-					"match": "'.*"
-				},
-				{
-					"name": "comment.line.3cad",
 					"match": "//.*"
 				},
 				{
@@ -95,7 +91,7 @@
 			"patterns": [
 				{
 					"match": "(?i)\\$\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
-					"name": "keyword.control.3cad"
+					"name": "variable.language.3cad"
 				}
 			]
 		},
@@ -103,7 +99,7 @@
 			"patterns": [
 				{
 					"match": "(?i)\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
-					"name": "keyword.control.3cad"
+					"name": "variable.language.3cad"
 				}
 			]
 		},

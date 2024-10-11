@@ -43,11 +43,11 @@ This is the README for the extension "3cad". This is a beta version.
 
 6. click 'new token' 
 
-- Name is your extension name (kebab case),
+    - Name is your extension name (kebab case),
 
-- Organization must select All accessible organizations, otherwise throw "Error: Failed Request: Unauthorized(401)";
+    - Organization must select All accessible organizations, otherwise throw "Error: Failed Request: Unauthorized(401)";
 
-- Scopes → Show all scopes → "Marketplace" select Acquire+Publish, create... 
+    - Scopes → Show all scopes → "Marketplace" select Acquire+Publish, create... 
 
 7. Copy token, backup to file or print it 
 

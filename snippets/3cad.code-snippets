@@ -2,7 +2,7 @@
 	"For value": {
 		"prefix": "#FOR",
 		"body": [
-			"#FOR ${1:Value};${1:Value};${1:Value}",
+			"#FOR ${1:Value};${2:Value};${3:Value}",
 			"\t$0",
 			"#ENDFOR"
 		],
@@ -12,7 +12,7 @@
 	"For range": {
 		"prefix": "#FOR",
 		"body": [
-			"#FOR $${1:Start_Range}:${1:End_Range}",
+			"#FOR $${1:Start_Range}:${2:End_Range}",
 			"\t$0",
 			"#ENDFOR"
 		],
@@ -22,10 +22,10 @@
 	"Select Case": {
 		"prefix": "#SELECT",
 		"body": [
-			"#SELECT $1",
-			"\t#CASE ${1:Int}:${2:Int}",
+			"#SELECT ${1:Variable}",
+			"\t#CASE ${2:Int}:${3:Int}",
 			"\t\t$0",
-			"\t#CASES ${1:String}:${2:String}",
+			"\t#CASES ${4:String}:${5:String}",
 			"\t\t$0",
 			"\t#DEFAULT",
 			"\t\t$0",
@@ -61,7 +61,7 @@
 		"body": [
 		"#IF ${1:Boolean}",
 		"\t$0",
-		"#ELSEIF ${1:Boolean}",
+		"#ELSEIF ${2:Boolean}",
 		"\t$0",
 		"#ELSE",
 		"\t$0",
