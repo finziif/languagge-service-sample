@@ -38,7 +38,11 @@
         {
           "command": "editor.action.formatDocument",
           "title": "Format Document"
-        }
+        },
+        {
+          "command": "editor.action.revealDefinition",
+          "title": "Go to Definition"
+      }
       ]
     },
     "grammars": [
@@ -69,5 +73,7 @@
     "vscode": "^1.0.0",
     "vscode-languageserver": "^9.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "vscode-uri": "^3.0.8"
+  }
 }

@@ -15,9 +15,15 @@ import {
 	Range,	
 	TextEdit,
 	type DocumentDiagnosticReport,
+	Location,
+	Position
 } from 'vscode-languageserver/node';
 
-import { Position, TextDocument } from 'vscode-languageserver-textdocument';
+import {  TextDocument } from 'vscode-languageserver-textdocument';
+import { URI } from 'vscode-uri';
+import path = require('path');
+import * as fs from 'fs';
+
 
 const connection = createConnection(ProposedFeatures.all);
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -48,6 +54,7 @@ connection.onInitialize((params: InitializeParams) => {
 			documentFormattingProvider : true,
 			hoverProvider : true,
             textDocumentSync: TextDocumentSyncKind.Incremental,
+			definitionProvider: true, 
             completionProvider: {
                 resolveProvider: true,
 				triggerCharacters: [ '.' ]
@@ -80,6 +87,51 @@ connection.onInitialized(() => {
 		});
 	}
 });
+
+
+function getImportFilePath(importPath:string, currentFile:string) {
+    // Qui puoi implementare la logica per risolvere il percorso del file importato
+    const directory = path.dirname(currentFile);
+    const resolvedPath = path.resolve(directory, importPath + '.xp');
+    if (fs.existsSync(resolvedPath)) {
+        return resolvedPath;
+    }
+
+    return null;
+}
+
+
+connection.onDefinition((params) => {
+    const document = documents.get(params.textDocument.uri);
+	if (!document) {
+		return [];
+	}
+    const lines = document.getText().split('\n');
+    const position = params.position;
+    const line = lines[position.line];
+    
+    // Cerca la parola dopo 'import' nella riga corrente
+    const importMatch = /^\s*([^\s;]+)/.exec(line);
+    if (importMatch) {
+        const importPath = importMatch[1];
+        const currentFile = URI.parse(document.uri).fsPath;
+        const filePath = getImportFilePath(importPath, currentFile);
+        
+        if (filePath) {
+            const targetUri = `file:${filePath}`;
+            return {
+                uri: targetUri,
+                range: {
+                    start: Position.create(0, 0),
+                    end: Position.create(0, 0)
+                }
+            };
+        }
+    }
+
+    return null;
+});
+
 
 // The example settings
 interface ExampleSettings {
@@ -133,7 +185,7 @@ documents.onDidClose(e => {
 
 connection.languages.diagnostics.on(async (params) => {
 	const document = documents.get(params.textDocument.uri);
-	if (document !== undefined) {
+	if (document) {
 		return {
 			kind: DocumentDiagnosticReportKind.Full,
 			items: await validateTextDocument(document)
@@ -261,17 +313,13 @@ connection.onDocumentFormatting((params) => {
     if (!document) {
         return [];
     }
-
     const text = document.getText();
-
     // Applica la tua logica di formattazione al documento
     const formattedText = formatDocument(text);
-
 	const fullRange: Range = {
         start: { line: 0, character: 0 },
         end: { line: document.lineCount - 1, character: Number.MAX_SAFE_INTEGER }
     };
-
     // Restituisce la modifica al client
     return [TextEdit.replace(fullRange, formattedText)];
 });
