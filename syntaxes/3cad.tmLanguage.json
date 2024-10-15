@@ -3,6 +3,22 @@
 	"name": "3cad",
 	"patterns": [
 		{
+			"begin": "(?i)^\\s*#(vb\\b)",
+			"beginCaptures": {
+                "0": { "name": "keyword.control.3cad" }
+            },
+            "end": "(?i)^\\s*#(endvb\\b)",
+			"endCaptures": {
+				"0": { "name": "keyword.control.3cad" }
+			},
+            "name": "meta.embedded.block.vb",
+            "patterns": [
+                {
+                    "include": "source.asp.vb.net"
+                }
+            ]
+		},
+		{
 			"include": "#comment"
 		},
 		{
@@ -52,6 +68,7 @@
 				"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT|BREAK)\\b"
 			}]
 		},
+
 		"variables": {			
 			"begin": "\\$\\(",
 			"beginCaptures": {

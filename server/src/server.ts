@@ -15,7 +15,6 @@ import {
 	Range,	
 	TextEdit,
 	type DocumentDiagnosticReport,
-	Location,
 	Position
 } from 'vscode-languageserver/node';
 
@@ -206,19 +205,34 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
-// https://github.com/microsoft/vscode-extension-samples/blob/0107f5a8ee940a46a03c8bdcbfdd172a8ff56059/lsp-sample/server/src/server.ts#L162
+const pattern = /#(?!let\b|lets\b|letv\b|msg\b|if\b|elseif\b|else\b|endif\b|for\b|endfor\b|select\b|endselect\b|case\b|cases\b|default\b|break\b|vb\b|endvb\b)\w+/gi;
+
+const stringRegex = /#lets\s+\w+\s*=\s*.*#?.*/gi; 
+
+
+	  // https://github.com/microsoft/vscode-extension-samples/blob/0107f5a8ee940a46a03c8bdcbfdd172a8ff56059/lsp-sample/server/src/server.ts#L162
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
-	let maxNumberOfProblems:number = 100;
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	const text = textDocument.getText();
-	const pattern = /#(?!let\b|lets\b|msg\b|if\b|elseif\b|else\b|endif\b|for\b|endfor\b|select\b|endselect\b|case\b|cases\b|default\b|break\b)\w+/gi;
 	let m: RegExpExecArray | null;
-
 	let problems = 0;
+	const stringMatches = [...text.matchAll(stringRegex)].map(match => ({
+		start: match.index!,
+		end: match.index! + match[0].length
+	}));
 	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < maxNumberOfProblems) {
+	while ((m = pattern.exec(text))) {
+		const commandPosition = m.index!;
+		const isInsideString = stringMatches.some(stringRange => {
+			return commandPosition >= stringRange.start && commandPosition <= stringRange.end;
+		  });
+	  
+		  if (isInsideString) {
+			continue;
+		  }
+
 		problems++;
 		const diagnostic: Diagnostic = {
 			severity: DiagnosticSeverity.Error,
@@ -265,9 +279,11 @@ connection.onCompletion(
 		// info and always provide the same completion items.
 		
 		const mySystemFunctions: CompletionItem[] = [
-			{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assign variable', documentation: 'Sintassi: `#LET <nome_variabile> = valore`' },
-			{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assign string', documentation: 'Sintassi: `#LETS <nome_variabile> = stringa`' },
-			{ label: '#MSG', kind: CompletionItemKind.Function, detail: 'Print message', documentation: 'Sintassi: `#MSG (message: string)`' }, 
+			{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assegnazione variabile numerica', documentation: 'Sintassi: `#LET <nome_variabile> = valore`' },
+			{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assegnazione stringa', documentation: 'Sintassi: `#LETS <nome_variabile> = stringa`' },
+			{ label: '#LETV', kind: CompletionItemKind.Function, detail: 'Forza il valore di una variante', documentation: 'Sintassi: `#LETV <nome_variante>  = <valore>`' }, 
+			{ label: '#MSG', kind: CompletionItemKind.Function, detail: 'Stampa un messaggio a schermo', documentation: 'Sintassi: `#MSG (message: string)`' }, 
+			{ label: '#VB', kind: CompletionItemKind.Function, detail: 'Include la sintassi visual basic', documentation: 'Sintassi: `#VB .... #ENDVB`' }, 
 		];
 
 		return mySystemFunctions;
@@ -328,9 +344,11 @@ documents.listen(connection);
 
 // Definizione delle funzioni di sistema
 const systemFunctions: { [key: string]: string } = {
-	"#MSG": "Stampa un messaggio a schermo.\n\n**Sintassi**: `#MSG <stringa>",
+	"#MSG": "Stampa un messaggio a schermo.\n\n**Sintassi**: `#MSG <stringa>`",
 	"#LET": "Assegnazione variabile numerica.\n\n**Sintassi**: `#LET <nome_variabile> = valore`",
 	"#LETS": "Assegnazione stringa.\n\n**Sintassi**: `#LETS <nome_variabile> = stringa`",
+	"#LETV": "Forza il valore di una variante.\n\n**Sintassi**: `#LETV <nome_variante> = valore`",
+	"#VB": "Include la sintassi visual basic.\n\n**Sintassi**: `#VB ... #ENDVB`",
 	// @TODO: Aggiungi altre funzioni di sistema
 };
 

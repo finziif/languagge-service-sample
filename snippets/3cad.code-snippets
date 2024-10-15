@@ -69,4 +69,38 @@
 		],
 		"description": "Preprocessor If Elseif Else block with matching endif"
 	},
+
+	"#VB ... #ENDVB": {
+		"prefix": "#VB",
+		"body": [
+		"#VB",
+		"\t$0",
+		"#ENDVB"
+		],
+		"description": "Include Visual Basic code"
+	},
+
+	"#LET": {
+		"prefix": "#LET",
+		"body": [
+		"#LET ${1:NomeVariabile} = ${2:Valore}",
+		],
+		"description": "Generic variable assignment"
+	},
+
+	"#LETS": {
+		"prefix": "#LETS",
+		"body": [
+		"#LETS ${1:NomeVariabile} = ${2:Stringa}",
+		],
+		"description": "String variable assignment"
+	},
+
+	"#LETV": {
+		"prefix": "#LETV",
+		"body": [
+		"#LETV ${1:NomeVariante} = ${2:Valore}",
+		],
+		"description": "Variante forced assignment"
+	},
 }
