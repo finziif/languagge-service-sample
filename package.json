@@ -24,10 +24,15 @@
           "3cad"
         ],
         "extensions": [
-          ".xp"
+          ".m3c"
         ],
         "configuration": "./language-configuration.json"
-      }
+      },
+      {
+        "id": "vb",
+        "aliases": ["Visual Basic"],
+        "extensions": [".xp"]
+      } 
     ],
     "configuration": {
       "commands": [

@@ -91,7 +91,7 @@ connection.onInitialized(() => {
 function getImportFilePath(importPath:string, currentFile:string) {
     // Qui puoi implementare la logica per risolvere il percorso del file importato
     const directory = path.dirname(currentFile);
-    const resolvedPath = path.resolve(directory, importPath + '.xp');
+    const resolvedPath = path.resolve(directory, importPath + '.m3c');
     if (fs.existsSync(resolvedPath)) {
         return resolvedPath;
     }
