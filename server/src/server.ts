@@ -88,13 +88,13 @@ connection.onInitialized(() => {
 });
 
 
-function getImportFilePath(importPath:string, currentFile:string) {
-    // Qui puoi implementare la logica per risolvere il percorso del file importato
+function getImportFilePath(importPath:string, currentFile:string, documentExtension:string) {
+    // Verifico che sia presente nella cartella principale del progetto il file selezionato con la corretta estensione
     const directory = path.dirname(currentFile);
-    const resolvedPath = path.resolve(directory, importPath + '.m3c');
-    if (fs.existsSync(resolvedPath)) {
+    const resolvedPath = path.resolve(directory, `${importPath}.${documentExtension}`);
+
         return resolvedPath;
-    }
+
 
     return null;
 }
@@ -108,14 +108,18 @@ connection.onDefinition((params) => {
     const lines = document.getText().split('\n');
     const position = params.position;
     const line = lines[position.line];
-    
-    // Cerca la parola dopo 'import' nella riga corrente
-    const importMatch = /^\s*([^\s;]+)/.exec(line);
+	// Cerca la parola iniziale, che potrebbe corrispondere a una macro
+	// In base all'estensione definisco una regex differente
+	let importMatch = /^\s*([^\s;]+)/.exec(line);
+	let documentExtension = 'm3c';
+    if (document.languageId === 'vb') {
+		importMatch = /^\s*''\s*INC\s*.*/.exec(line);
+		documentExtension = 'xp';
+	}
     if (importMatch) {
-        const importPath = importMatch[1];
+        const importPath = importMatch[0].replace("''", "").replace("INC", "").replace(/ /g, "");
         const currentFile = URI.parse(document.uri).fsPath;
-        const filePath = getImportFilePath(importPath, currentFile);
-        
+        const filePath = getImportFilePath(importPath, currentFile, documentExtension);
         if (filePath) {
             const targetUri = `file:${filePath}`;
             return {
@@ -127,7 +131,6 @@ connection.onDefinition((params) => {
             };
         }
     }
-
     return null;
 });
 
@@ -207,64 +210,68 @@ documents.onDidChangeContent(change => {
 
 const pattern = /#(?!let\b|lets\b|letv\b|msg\b|if\b|elseif\b|else\b|endif\b|for\b|endfor\b|select\b|endselect\b|case\b|cases\b|default\b|break\b|vb\b|endvb\b)\w+/gi;
 
+// Regex per assegnazione stringa
 const stringRegex = /#lets\s+\w+\s*=\s*.*#?.*/gi; 
 
-
-	  // https://github.com/microsoft/vscode-extension-samples/blob/0107f5a8ee940a46a03c8bdcbfdd172a8ff56059/lsp-sample/server/src/server.ts#L162
+// https://github.com/microsoft/vscode-extension-samples/blob/0107f5a8ee940a46a03c8bdcbfdd172a8ff56059/lsp-sample/server/src/server.ts#L162
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-	// In this simple example we get the settings for every validate run.
-	const settings = await getDocumentSettings(textDocument.uri);
-	// The validator creates diagnostics for all uppercase words length 2 and more
-	const text = textDocument.getText();
-	let m: RegExpExecArray | null;
-	let problems = 0;
-	const stringMatches = [...text.matchAll(stringRegex)].map(match => ({
-		start: match.index!,
-		end: match.index! + match[0].length
-	}));
 	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text))) {
-		const commandPosition = m.index!;
-		const isInsideString = stringMatches.some(stringRange => {
-			return commandPosition >= stringRange.start && commandPosition <= stringRange.end;
-		  });
-	  
-		  if (isInsideString) {
-			continue;
-		  }
+	if (textDocument.languageId === '3cad') {
+		// In this simple example we get the settings for every validate run.
+		const settings = await getDocumentSettings(textDocument.uri);
+		// The validator creates diagnostics for all uppercase words length 2 and more
+		const text = textDocument.getText();
+		let m: RegExpExecArray | null;
+		let problems = 0;
+		const stringMatches = [...text.matchAll(stringRegex)].map(match => ({
+			start: match.index!,
+			end: match.index! + match[0].length
+		}));
+		while ((m = pattern.exec(text))) {
+			const commandPosition = m.index!;
+			const isInsideString = stringMatches.some(stringRange => {
+				return commandPosition >= stringRange.start && commandPosition <= stringRange.end;
+			});
+		
+			if (isInsideString) {
+				continue;
+			}
 
-		problems++;
-		const diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Error,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
-			},
-			message: `${m[0]} is not define.`,
-			source: 'ex'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Spelling matters'
+			problems++;
+			const diagnostic: Diagnostic = {
+				severity: DiagnosticSeverity.Error,
+				range: {
+					start: textDocument.positionAt(m.index),
+					end: textDocument.positionAt(m.index + m[0].length)
 				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
+				message: `${m[0]} is not define.`,
+				source: 'ex'
+			};
+			if (hasDiagnosticRelatedInformationCapability) {
+				diagnostic.relatedInformation = [
+					{
+						location: {
+							uri: textDocument.uri,
+							range: Object.assign({}, diagnostic.range)
+						},
+						message: 'Spelling matters'
 					},
-					message: 'Particularly for names'
-				}
-			];
+					{
+						location: {
+							uri: textDocument.uri,
+							range: Object.assign({}, diagnostic.range)
+						},
+						message: 'Particularly for names'
+					}
+				];
+			}
+			diagnostics.push(diagnostic);
 		}
-		diagnostics.push(diagnostic);
 	}
 	return diagnostics;
 }
+
+
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received a file change event');
@@ -281,7 +288,7 @@ connection.onCompletion(
 		const mySystemFunctions: CompletionItem[] = [
 			{ label: '#LET', kind: CompletionItemKind.Keyword, detail: 'Assegnazione variabile numerica', documentation: 'Sintassi: `#LET <nome_variabile> = valore`' },
 			{ label: '#LETS', kind: CompletionItemKind.Keyword, detail: 'Assegnazione stringa', documentation: 'Sintassi: `#LETS <nome_variabile> = stringa`' },
-			{ label: '#LETV', kind: CompletionItemKind.Function, detail: 'Forza il valore di una variante', documentation: 'Sintassi: `#LETV <nome_variante>  = <valore>`' }, 
+			{ label: '#LETV', kind: CompletionItemKind.Keyword, detail: 'Forza il valore di una variante', documentation: 'Sintassi: `#LETV <nome_variante>  = <valore>`' }, 
 			{ label: '#MSG', kind: CompletionItemKind.Function, detail: 'Stampa un messaggio a schermo', documentation: 'Sintassi: `#MSG (message: string)`' }, 
 			{ label: '#VB', kind: CompletionItemKind.Function, detail: 'Include la sintassi visual basic', documentation: 'Sintassi: `#VB .... #ENDVB`' }, 
 		];
@@ -306,7 +313,10 @@ connection.onCompletionResolve(
 	}
 );
 
+// Prefissi per aumentare l'indentazione 
 const prefixesIncrease = ['#if', '#elseif', '#else', '#for', '#select', '#case', '#cases', '#default'];
+
+// Prefissi per diminuire l'indentazione 
 const prefixesDecrease = ['#endif', '#endfor', '#endselect', '#case', '#cases', '#default'];
 
 function formatDocument(text: string): string {
@@ -356,9 +366,7 @@ connection.onHover((params) => {
 	const document = documents.get(params.textDocument.uri);
 	if (document) {
 		const position = params.position;
-
 		const word = getWordAtPosition(document, position); // Trova la parola su cui si trova il cursore
-
 		if (systemFunctions[word]) {
 			return {
 				contents: {
@@ -368,7 +376,6 @@ connection.onHover((params) => {
 			};
 		}
 	}
-
     return null;
 });
 

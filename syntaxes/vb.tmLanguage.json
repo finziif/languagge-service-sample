@@ -1,0 +1,238 @@
+{
+	"information_for_contributors": [
+		"This file has been converted from https://github.com/textmate/asp.vb.net.tmbundle/blob/master/Syntaxes/ASP%20VB.net.plist",
+		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
+		"Once accepted there, we are happy to receive an update request."
+	],
+	"version": "https://github.com/textmate/asp.vb.net.tmbundle/commit/72d44550b3286d0382d7be0624140cf97857ff69",
+	"name": "Visual Basic",
+	"scopeName": "source.vb",
+	"comment": "Modified from the original extension VB ASP bundle. Originally modified by Thomas Aylott subtleGradient.com",
+	"patterns": [
+		{
+			"match": "\\n",
+			"name": "meta.ending-space"
+		},
+		{
+			"include": "#round-brackets"
+		},
+		{
+			"begin": "^(?=\\t)",
+			"end": "(?=[^\\t])",
+			"name": "meta.leading-space",
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "meta.odd-tab.tabs"
+						},
+						"2": {
+							"name": "meta.even-tab.tabs"
+						}
+					},
+					"match": "(\\t)(\\t)?"
+				}
+			]
+		},
+		{
+			"begin": "^(?= )",
+			"end": "(?=[^ ])",
+			"name": "meta.leading-space",
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "meta.odd-tab.spaces"
+						},
+						"2": {
+							"name": "meta.even-tab.spaces"
+						}
+					},
+					"match": "(  )(  )?"
+				}
+			]
+		},
+		{
+			"captures": {
+				"1": {
+					"name": "storage.type.function.vb"
+				},
+				"2": {
+					"name": "entity.name.function.vb"
+				},
+				"3": {
+					"name": "punctuation.definition.parameters.vb"
+				},
+				"4": {
+					"name": "variable.parameter.function.vb"
+				},
+				"5": {
+					"name": "punctuation.definition.parameters.vb"
+				}
+			},
+			"match": "^\\s*((?i:function|sub))\\s*([a-zA-Z_]\\w*)\\s*(\\()([^)]*)(\\)).*\\n?",
+			"name": "meta.function.vb"
+		},
+		{
+			"begin": "(^[ \\t]+)?(?=')",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.whitespace.comment.leading.vb"
+				}
+			},
+			"end": "(?!\\G)",
+			"patterns": [
+				{
+					"begin": "'",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.vb"
+						}
+					},
+					"end": "\\n",
+					"name": "comment.line.apostrophe.vb"
+				}
+			]
+		},
+		{
+			"match": "(?i:\\b(If|Then|Else|ElseIf|Else If|End If|While|Wend|For|To|Each|Case|Select|End Select|Return|Continue|Do|Until|Loop|Next|With|Exit Do|Exit For|Exit Function|Exit Property|Exit Sub|IIf)\\b)",
+			"name": "keyword.control.vb"
+		},
+		{
+			"match": "(?i:\\b(Mod|And|Not|Or|Xor|as)\\b)",
+			"name": "keyword.operator.vb"
+		},
+		{
+			"captures": {
+				"1": {
+					"name": "storage.type.vb"
+				},
+				"2": {
+					"name": "variable.other.bfeac.vb"
+				},
+				"3": {
+					"name": "meta.separator.comma.vb"
+				}
+			},
+			"match": "(?i:(dim)\\s*(?:(\\b[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b)\\s*(,?)))",
+			"name": "variable.other.dim.vb"
+		},
+		{
+			"match": "(?i:\\s*\\b(Call|Class|Const|Dim|Redim|Function|Sub|Private Sub|Public Sub|End Sub|End Function|End Class|End Property|Public Property|Private Property|Set|Let|Get|New|Randomize|Option Explicit|On Error Resume Next|On Error GoTo)\\b\\s*)",
+			"name": "storage.type.vb"
+		},
+		{
+			"match": "(?i:\\b(Private|Public|Default)\\b)",
+			"name": "storage.modifier.vb"
+		},
+		{
+			"match": "(?i:\\s*\\b(Empty|False|Nothing|Null|True)\\b)",
+			"name": "constant.language.vb"
+		},
+		{
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.vb"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.vb"
+				}
+			},
+			"name": "string.quoted.double.vb",
+			"patterns": [
+				{
+					"match": "\"\"",
+					"name": "constant.character.escape.apostrophe.vb"
+				}
+			]
+		},
+		{
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.variable.vb"
+				}
+			},
+			"match": "(\\$)[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b\\s*",
+			"name": "variable.other.vb"
+		},
+		{
+			"match": "(?i:\\b(Application|ObjectContext|Request|Response|Server|Session)\\b)",
+			"name": "support.class.vb"
+		},
+		{
+			"match": "(?i:\\b(Contents|StaticObjects|ClientCertificate|Cookies|Form|QueryString|ServerVariables)\\b)",
+			"name": "support.class.collection.vb"
+		},
+		{
+			"match": "(?i:\\b(TotalBytes|Buffer|CacheControl|Charset|ContentType|Expires|ExpiresAbsolute|IsClientConnected|PICS|Status|ScriptTimeout|CodePage|LCID|SessionID|Timeout)\\b)",
+			"name": "support.constant.vb"
+		},
+		{
+			"match": "(?i:\\b(Lock|Unlock|SetAbort|SetComplete|BinaryRead|AddHeader|AppendToLog|BinaryWrite|Clear|End|Flush|Redirect|Write|CreateObject|HTMLEncode|MapPath|URLEncode|Abandon|Convert|Regex)\\b)",
+			"name": "support.function.vb"
+		},
+		{
+			"match": "(?i:\\b(Application_OnEnd|Application_OnStart|OnTransactionAbort|OnTransactionCommit|Session_OnEnd|Session_OnStart)\\b)",
+			"name": "support.function.event.vb"
+		},
+		{
+			"match": "(?i:(?<=as )(\\b[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b))",
+			"name": "support.type.vb"
+		},
+		{
+			"match": "(?i:\\b(Array|Add|Asc|Atn|CBool|CByte|CCur|CDate|CDbl|Chr|CInt|CLng|Conversions|Cos|CreateObject|CSng|CStr|Date|DateAdd|DateDiff|DatePart|DateSerial|DateValue|Day|Derived|Math|Escape|Eval|Exists|Exp|Filter|FormatCurrency|FormatDateTime|FormatNumber|FormatPercent|GetLocale|GetObject|GetRef|Hex|Hour|InputBox|InStr|InStrRev|Int|Fix|IsArray|IsDate|IsEmpty|IsNull|IsNumeric|IsObject|Item|Items|Join|Keys|LBound|LCase|Left|Len|LoadPicture|Log|LTrim|RTrim|Trim|Maths|Mid|Minute|Month|MonthName|MsgBox|Now|Oct|Remove|RemoveAll|Replace|RGB|Right|Rnd|Round|ScriptEngine|ScriptEngineBuildVersion|ScriptEngineMajorVersion|ScriptEngineMinorVersion|Second|SetLocale|Sgn|Sin|Space|Split|Sqr|StrComp|String|StrReverse|Tan|Time|Timer|TimeSerial|TimeValue|TypeName|UBound|UCase|Unescape|VarType|Weekday|WeekdayName|Year)\\b)",
+			"name": "support.function.vb"
+		},
+		{
+			"match": "-?\\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))((e|E)(\\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f)?\\b",
+			"name": "constant.numeric.vb"
+		},
+		{
+			"match": "(?i:\\b(vbtrue|vbfalse|vbcr|vbcrlf|vbformfeed|vblf|vbnewline|vbnullchar|vbnullstring|int32|vbtab|vbverticaltab|vbbinarycompare|vbtextcomparevbsunday|vbmonday|vbtuesday|vbwednesday|vbthursday|vbfriday|vbsaturday|vbusesystemdayofweek|vbfirstjan1|vbfirstfourdays|vbfirstfullweek|vbgeneraldate|vblongdate|vbshortdate|vblongtime|vbshorttime|vbobjecterror|vbEmpty|vbNull|vbInteger|vbLong|vbSingle|vbDouble|vbCurrency|vbDate|vbString|vbObject|vbError|vbBoolean|vbVariant|vbDataObject|vbDecimal|vbByte|vbArray)\\b)",
+			"name": "support.type.vb"
+		},
+		{
+			"captures": {
+				"1": {
+					"name": "entity.name.function.vb"
+				}
+			},
+			"match": "(?i:(\\b[a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?\\b)(?=\\(\\)?))",
+			"name": "support.function.vb"
+		},
+		{
+			"match": "(?i:((?<=(\\+|=|-|\\&|\\\\|/|<|>|\\(|,))\\s*\\b([a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?)\\b(?!(\\(|\\.))|\\b([a-zA-Z_x7f-xff][a-zA-Z0-9_x7f-xff]*?)\\b(?=\\s*(\\+|=|-|\\&|\\\\|/|<|>|\\(|\\)))))",
+			"name": "variable.other.vb"
+		},
+		{
+			"match": "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|/=|%=|\\+=|\\-=|&=|\\^=|\\b(in|instanceof|new|delete|typeof|void)\\b",
+			"name": "keyword.operator.vb"
+		}
+	],
+	"repository": {
+		"round-brackets": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.round-brackets.begin.vb"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.round-brackets.end.vb"
+				}
+			},
+			"name": "meta.round-brackets",
+			"patterns": [
+				{
+					"include": "source.vb"
+				}
+			]
+		}
+	}
+}

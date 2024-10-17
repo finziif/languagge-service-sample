@@ -14,7 +14,7 @@
             "name": "meta.embedded.block.vb",
             "patterns": [
                 {
-                    "include": "source.asp.vb.net"
+                    "include": "source.vb"
                 }
             ]
 		},

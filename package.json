@@ -26,12 +26,13 @@
         "extensions": [
           ".m3c"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./3cad-language-configuration.json"
       },
       {
         "id": "vb",
         "aliases": ["Visual Basic"],
-        "extensions": [".xp"]
+        "extensions": [".xp"],
+        "configuration": "./vb-language-configuration.json"
       } 
     ],
     "configuration": {
@@ -55,18 +56,24 @@
         "language": "3cad",
         "scopeName": "source.3cad",
         "path": "./syntaxes/3cad.tmLanguage.json"
+      },
+      {
+        "language": "vb",
+        "scopeName": "source.vb",
+        "path": "./syntaxes/vb.tmLanguage.json"
       }
     ],
     "snippets": [
       {
         "language": "3cad",
         "path": "./snippets/3cad.code-snippets"
+      },
+      {
+        "language": "vb",
+        "path": "./snippets/vb.code-snippets"
       }
     ]
   },
-  "activationEvents": [
-    "onLanguage:3cad"
-  ],
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "^20",
