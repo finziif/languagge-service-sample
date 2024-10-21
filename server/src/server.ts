@@ -12,6 +12,8 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
+	SemanticTokensParams,
+	SemanticTokensBuilder,
 	Range,	
 	TextEdit,
 	type DocumentDiagnosticReport,
@@ -58,6 +60,18 @@ connection.onInitialize((params: InitializeParams) => {
                 resolveProvider: true,
 				triggerCharacters: [ '.' ]
             },
+/* 			semanticTokensProvider: {
+                full: true,
+                legend: {
+                    tokenTypes: [
+                        'variable',
+                        'vector',
+                        'vectorSeparator',
+                        'string'
+                    ],
+                    tokenModifiers: ['defaultLibrary']
+                }
+            }, */
             diagnosticProvider: {
 				interFileDependencies: false,
 				workspaceDiagnostics: false
@@ -92,10 +106,9 @@ function getImportFilePath(importPath:string, currentFile:string, documentExtens
     // Verifico che sia presente nella cartella principale del progetto il file selezionato con la corretta estensione
     const directory = path.dirname(currentFile);
     const resolvedPath = path.resolve(directory, `${importPath}.${documentExtension}`);
-
+	if (fs.existsSync(resolvedPath)) {
         return resolvedPath;
-
-
+	}
     return null;
 }
 
@@ -202,6 +215,68 @@ connection.languages.diagnostics.on(async (params) => {
 	}
 });
 
+
+const tokenTypesLegend = ['variable', 'vector', 'vectorSeparator', 'string'];
+const tokenModifiersLegend = ['defaultLibrary'];
+
+// Regex per identificare stringhe multilinee con variabili
+//const allCanc = /#.+/gmi;
+//const multiLinesStringRegex = /#lets\s*[a-zA-Z0-9_]*\s*=(.*\\\n)+.*$/gmi;
+// const variableInStringRegex = /\$\([a-zA-Z0-9_]+\)/g;
+
+
+
+/* connection.languages.semanticTokens.on((params: SemanticTokensParams) => {
+	const tokens = new SemanticTokensBuilder();
+    const document = documents.get(params.textDocument.uri);
+    if (!document) {
+        return { data: [] }; // Restituisce un array vuoto se il documento non esiste
+    }
+ 	if (document.languageId === '3cad') {
+		const lines = document.getText().split(/\r?\n/);
+		const multiLinesStringRegex = /(#lets)\s*([a-zA-Z0-9_]*)\s*(=)\s*(.*)$/
+		const backslashPattern = /\\\s*$/;
+		const noBackSlashPattern = /^(?!.*\\\s*$).+/;
+		let m: RegExpExecArray | null;
+		for (let i = 1; i < lines.length; i++) {
+			if (allCanc.test(lines[i])) {
+				tokens.push(...[
+					i,
+					0,
+					lines[i].length,
+					tokenTypesLegend.indexOf('string'),
+					0
+				]);
+			}
+		const previousLine = lines[i - 1];
+			if ((backslashPattern.test(previousLine))) {
+				if (noBackSlashPattern.test(lines[i])) {
+					const tokenTypeStringIndex = tokenTypesLegend.indexOf('string');
+					tokens.push(...[i, 0, lines[i].length, tokenTypeStringIndex, 0]);
+				}
+			}
+		}
+	} 
+
+-- 	if (document.languageId === '3cad') {
+		let match : RegExpExecArray | null;
+		const text = document.getText();
+		while ((match = allCanc.exec(text))) {
+			let startIndex = match.index;
+			let startPosition = document.positionAt(startIndex);
+			tokens.push(...[
+				startPosition.line, 
+				startPosition.character,
+				1, 
+				3, 
+				0]
+			);	
+		}
+	}--
+	return tokens.build(); 
+}); */
+
+
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
@@ -232,7 +307,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 			const isInsideString = stringMatches.some(stringRange => {
 				return commandPosition >= stringRange.start && commandPosition <= stringRange.end;
 			});
-		
+			// Verifico che il comando non sia all'interno di una stringa
 			if (isInsideString) {
 				continue;
 			}

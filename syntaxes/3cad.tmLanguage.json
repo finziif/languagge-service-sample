@@ -63,59 +63,60 @@
 			]
 		},
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.3cad",
-				"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT|BREAK)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "keyword.control.3cad",
+					"match": "(?i)#\\b(IF|ELSEIF|ELSE|ENDIF|FOR|ENDFOR|LET|LETS|MSG|SELECT|CASE|CASES|ENDSELECT|DEFAULT|BREAK)\\b"
+				}
+			]
 		},
-
-		"variables": {			
+		"variables": {
 			"begin": "\\$\\(",
 			"beginCaptures": {
-			  "0": {
-				"name": "variable.language.3cad"
-			  }
+				"0": {
+					"name": "variable.language.3cad"
+				}
 			},
 			"end": "\\)",
 			"endCaptures": {
 				"0": {
 					"name": "variable.language.3cad"
-					}
-				},
+				}
+			},
 			"patterns": [
 				{
 					"match": "[a-zA-Z0-9_.]+",
 					"name": "variable.name.3cad"
 				},
 				{
-                    "begin": ":", 
-                    "beginCaptures": {
-                        "0": {
-                            "name": "keyword.other.3cad"
-                        }
-                    },
-                    "end": "(?=\\))",  
-                    "patterns": [
-                        {
-                            "name": "variable.name.3cad",
-                            "match": "\\d+" 
-                        }
-                    ]
-                }
+					"begin": ":",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword.other.3cad"
+						}
+					},
+					"end": "(?=\\))",
+					"patterns": [
+						{
+							"name": "variable.name.3cad",
+							"match": "\\d+"
+						}
+					]
+				}
 			]
 		},
-		"special-variables": {			
+		"special-variables": {
 			"patterns": [
 				{
-					"match": "(?i)\\$\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
+					"match": "(?i)\\$\\b(L|A|P|NL|NA|NP|UL|UA|UP|PM|(APERTO)|(LATOSX)|(LATODX)|(LATOASX)|(LATOADX)|(LATOBSX)|(LATOBDX))\\b",
 					"name": "variable.language.3cad"
 				}
 			]
 		},
-		"special-assignment": {			
+		"special-assignment": {
 			"patterns": [
 				{
-					"match": "(?i)\\b(L|A|P|SL|SA|SP|NL|NA|NP|UL|UA|UP|PM)\\b",
+					"match": "(?i)\\b(L|A|P|NL|NA|NP|UL|UA|UP|PM)\\b",
 					"name": "variable.language.3cad"
 				}
 			]
@@ -123,21 +124,21 @@
 		"tipologie": {
 			"patterns": [
 				{
-					"begin": "^\\s*\\d{3}\\b", 
+					"begin": "^\\s*\\d{3}\\b",
 					"beginCaptures": {
 						"0": {
 							"name": "support.class.3cad"
 						}
 					},
 					"end": "(?=$)",
-					"patterns":[
+					"patterns": [
 						{
 							"match": ",",
-							"name" : "operator.separator.3cad"
+							"name": "operator.separator.3cad"
 						},
 						{
 							"match": "=",
-							"name" : "operator.assignment.3cad"
+							"name": "operator.assignment.3cad"
 						},
 						{
 							"include": "#tipologie-params"
@@ -161,15 +162,15 @@
 		"tipologie-params": {
 			"patterns": [
 				{
-					"match": "\\b(?i)(DL|DA|DP|SL|SA|SP|DIS|GL|C1|C2|X1|X2|X3|X4|X5|X6|X7|X8|X9)\\b",
-					"name" : "support.function.3cad"
+					"match": "\\b(?i)(L|A|P|SL|SA|SP|COD|AX|AY|AY|DIS|GL|LATO|C1|C2|MAN|FACC|X1|X2|X3|X4|X5|X6|X7|X8|X9)\\b",
+					"name": "support.function.3cad"
 				}
 			]
 		},
 		"operator": {
 			"begin": "(?<=\\+|\\-|\\/|\\*|\\=|\\<|\\<\\=|\\>|\\>\\=)\\s*",
-			"beginCaptures" : {
-				"1" : {
+			"beginCaptures": {
+				"1": {
 					"name": "operator.arithmetic.3cad"
 				}
 			},
@@ -177,7 +178,7 @@
 			"patterns": [
 				{
 					"match": "\\d+",
-					"name":"constant.numeric.3cad"
+					"name": "constant.numeric.3cad"
 				}
 			]
 		},
@@ -186,18 +187,18 @@
 			"begin": "(?i)(#let)\\s+",
 			"beginCaptures": {
 				"1": {
-					"name": "keyword.control.let.3ad"   
+					"name": "keyword.control.let.3ad"
 				}
 			},
 			"end": "(?=$)",
 			"patterns": [
 				{
 					"match": "=",
-					"name": "keyword.operator.assignment.3cad"         
+					"name": "keyword.operator.assignment.3cad"
 				},
 				{
 					"match": ",",
-					"name": "keyword.operator.separator.3cad" 
+					"name": "keyword.operator.separator.3cad"
 				},
 				{
 					"include": "#variables"
@@ -213,47 +214,68 @@
 				},
 				{
 					"match": "\\d+",
-					"name":"constant.numeric.3cad"
+					"name": "constant.numeric.3cad"
 				}
-			]		  	
+			]
 		},
 		"string-assignment": {
 			"begin": "(?i)(#lets)\\s+([a-zA-Z0-9_]*)\\s*(=)",
 			"beginCaptures": {
 				"1": {
-				"name": "keyword.control.let.3ad"   
+					"name": "keyword.control.let.3ad"
 				},
 				"2": {
-				"name": "variable.name.3cad"         
+					"name": "variable.name.3cad"
 				},
 				"3": {
-				"name": "keyword.operator.assignment.3cad" 
+					"name": "keyword.operator.assignment.3cad"
 				}
 			},
 			"end": "(?=$)",
 			"patterns": [
-				{  
+				{
 					"name": "string.unquoted.3cad",
 					"begin": "(?<=\\=)\\s*",
-              		"end": "(?=$)",
+					"end": "(?=$)",
 					"patterns": [
-						{  
+						{
 							"include": "#variables"
 						},
-						{  
+						{
 							"include": "#special-variables"
 						},
-						{  
+						{
 							"include": "#comment"
 						}
 					]
 				}
-			]		  	
+			]
 		},
+		"assignment-escape": {
+			"name": "string.unquoted.3cad",
+			"end": "($)",
+			"begin": "^\\s*(?!\/\/|#).*((\\$\\()([a-zA-Z0-9_.]+)((:)(\\d*))?(\\)))*(\\$L|A|P)*\\\\s*$",
+			"beginCaptures": {
+				"1": {
+					"name": "variable.language.3cad"
+				},
+				"2": {
+					"name": "variable.name.3cad"
+				},
+				"4": {
+					"name": "variable.language.3cad"
+				},
+				"5": {
+					"name": "variable.name.3cad"
+				}
+
+			}
+		},
+		
 		"special": {
 			"patterns": [
 				{
-					"name":"support.function.3cad",
+					"name": "support.function.3cad",
 					"match": "\\s*!(?i)(QUOTA1|ALTEZZE|MTTRASLA|MTINIT|MTRESET|ADDPUNTO|DELPUNTO|AZZERAPUNTI|AZZERA|TIPOBOX|IMGSCALA|CODICEBARRA|DIMBARRA|SAGOMA|SAGDUMP|FRESA)\\b"
 				}
 			]
@@ -263,7 +285,7 @@
 			"begin": "(?i)(#MSG)\\s+",
 			"beginCaptures": {
 				"1": {
-				"name": "keyword.control.3ad"   
+					"name": "keyword.control.3ad"
 				}
 			},
 			"end": "(?=$)",
