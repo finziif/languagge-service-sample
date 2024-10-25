@@ -1,6 +1,6 @@
-# 3cad README
+# README
 
-This is the README for the extension "3cad". This is a beta version. 
+This is the README for the extension. This is a beta version. 
 
 > [!NOTE]
 > To quickly create a new grammar extension, I use VS Code's Yeoman templates. To install it use `npm install yo generator-code` and to run it use `yo code`
